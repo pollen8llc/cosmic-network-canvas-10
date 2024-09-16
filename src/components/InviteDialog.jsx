@@ -1,11 +1,11 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Facebook, Twitter, LinkedIn, Instagram, Mail } from "lucide-react";
+import { Facebook, Twitter, Linkedin, Instagram, Mail } from "lucide-react";
 
 const socialIcons = [
   { icon: Facebook, name: 'Facebook' },
   { icon: Twitter, name: 'Twitter' },
-  { icon: LinkedIn, name: 'LinkedIn' },
+  { icon: Linkedin, name: 'LinkedIn' },
   { icon: Instagram, name: 'Instagram' },
   { icon: Mail, name: 'Email' },
 ];
