@@ -7,8 +7,8 @@ const NetworkFeed = ({ activeView, connections, networkUpdates, networkGrowth })
   if (activeView === 'connections') {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {connections.map((connection, index) => (
-          <Card key={index}>
+        {connections.map((connection) => (
+          <Card key={connection.id}>
             <CardContent className="flex flex-col items-center p-4">
               <Avatar className="w-24 h-24 mb-2">
                 <AvatarImage src={connection.avatar} alt={connection.name} />

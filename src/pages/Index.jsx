@@ -1,44 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import ProfileBanner from '../components/ProfileBanner';
 import ActionButtons from '../components/ActionButtons';
 import NetworkFeed from '../components/NetworkFeed';
 import IndustryList from '../components/IndustryList';
 
+const generateRandomConnections = (count) => {
+  const industries = ['Technology', 'Finance', 'Healthcare', 'Education', 'Marketing', 'Design', 'Engineering', 'Sales'];
+  return Array.from({ length: count }, (_, index) => ({
+    id: index + 1,
+    name: `User ${index + 1}`,
+    avatar: `/placeholder.svg`,
+    industry: industries[Math.floor(Math.random() * industries.length)],
+  }));
+};
+
+const generateNetworkGrowth = (connections) => {
+  const baseValue = connections.length * 3.14;
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return months.map((month, index) => ({
+    date: month,
+    value: Math.round(baseValue * (1 + (Math.random() - 0.5) * 0.2)), // Fluctuation of ±10%
+  }));
+};
+
 const Index = () => {
   const [activeView, setActiveView] = useState('updates');
   const [isIndustryListOpen, setIsIndustryListOpen] = useState(false);
 
   const username = "JOSEPH FRANCO";
-  const connectionCount = 125;
-  const networkValue = 1502;
+  const connections = useMemo(() => generateRandomConnections(139), []);
+  const networkValue = useMemo(() => Math.round(connections.length * 3.14), [connections]);
 
-  const connections = [
-    { name: "Tim Burkley", avatar: "/placeholder.svg", industry: "Technology" },
-    { name: "Amber James", avatar: "/placeholder.svg", industry: "Fashion" },
-    // Add more connections...
-  ];
+  const networkUpdates = useMemo(() => 
+    connections.slice(0, 10).map(conn => ({
+      name: conn.name,
+      avatar: conn.avatar,
+      content: `This is a status update from ${conn.name} in the ${conn.industry} industry.`
+    })),
+  [connections]);
 
-  const networkUpdates = [
-    { name: "Tim Burkley", avatar: "/placeholder.svg", content: "This is a status update I'm on the internet today" },
-    { name: "Amber James", avatar: "/placeholder.svg", content: "This is a status update I'm on the internet today" },
-    // Add more updates...
-  ];
+  const networkGrowth = useMemo(() => generateNetworkGrowth(connections), [connections]);
 
-  const networkGrowth = [
-    { date: "Jan", value: 500 },
-    { date: "Feb", value: 750 },
-    { date: "Mar", value: 1000 },
-    { date: "Apr", value: 1250 },
-    { date: "May", value: 1502 },
-  ];
-
-  const industries = [
-    { name: "Fashion", count: 157 },
-    { name: "Technology", count: 89 },
-    { name: "Finance", count: 45 },
-    // Add more industries...
-  ];
+  const industries = useMemo(() => {
+    const industryCount = connections.reduce((acc, conn) => {
+      acc[conn.industry] = (acc[conn.industry] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.entries(industryCount).map(([name, count]) => ({ name, count }));
+  }, [connections]);
 
   const handleButtonClick = (view) => {
     if (view === 'industryList') {
@@ -54,7 +64,7 @@ const Index = () => {
       <ProfileBanner username={username} />
       <main className="container mx-auto px-4 py-8">
         <ActionButtons
-          connectionCount={connectionCount}
+          connectionCount={connections.length}
           networkValue={networkValue}
           onButtonClick={handleButtonClick}
         />
