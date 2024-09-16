@@ -10,8 +10,12 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove(); // Clear previous content
 
-      const width = 800;
-      const height = 600;
+      const width = window.innerWidth * 0.7;
+      const height = window.innerHeight * 0.7;
+
+      svg.attr("width", width)
+         .attr("height", height)
+         .style("background-color", "black");
 
       const simulation = d3.forceSimulation([selectedNode, ...connections])
         .force("link", d3.forceLink().id(d => d.id).distance(100))
@@ -23,14 +27,14 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
         .selectAll("line")
         .data(connections.map(d => ({ source: selectedNode, target: d })))
         .enter().append("line")
-        .attr("stroke", "#666")
+        .attr("stroke", "#fff")
         .attr("stroke-opacity", 0.6);
 
       const node = svg.append("g")
         .selectAll("circle")
         .data([selectedNode, ...connections])
         .enter().append("circle")
-        .attr("r", d => d === selectedNode ? 10 : 5)
+        .attr("r", d => d === selectedNode ? 25 : 20)
         .attr("fill", d => d === selectedNode ? "#fff" : "#999")
         .call(d3.drag()
           .on("start", dragstarted)
@@ -49,7 +53,7 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
         .enter().append("text")
         .text(d => d.name)
         .attr("font-size", "10px")
-        .attr("fill", "#000")
+        .attr("fill", "#fff")
         .attr("dx", 12)
         .attr("dy", 4);
 
@@ -61,12 +65,12 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
           .attr("y2", d => d.target.y);
 
         node
-          .attr("cx", d => Math.max(30, Math.min(width - 30, d.x)))
-          .attr("cy", d => Math.max(30, Math.min(height - 30, d.y)));
+          .attr("cx", d => Math.max(20, Math.min(width - 20, d.x)))
+          .attr("cy", d => Math.max(20, Math.min(height - 20, d.y)));
 
         text
-          .attr("x", d => Math.max(30, Math.min(width - 30, d.x)))
-          .attr("y", d => Math.max(30, Math.min(height - 30, d.y)));
+          .attr("x", d => Math.max(20, Math.min(width - 20, d.x)))
+          .attr("y", d => Math.max(20, Math.min(height - 20, d.y)));
       });
 
       function dragstarted(event) {
@@ -89,16 +93,16 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
   }, [selectedNode, connections]);
 
   return (
-    <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg relative w-full h-full">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+      <div className="bg-black p-8 rounded-lg relative w-[70vw] h-[70vh]">
         <button
-          className="absolute top-4 right-4 text-red-500 text-2xl"
+          className="absolute top-4 right-4 text-white text-2xl"
           onClick={onClose}
         >
           ×
         </button>
-        <h2 className="text-2xl font-bold mb-4 text-black">{selectedNode.name}'s Network</h2>
-        <svg ref={svgRef} width="100%" height="calc(100% - 60px)"></svg>
+        <h2 className="text-2xl font-bold mb-4 text-white">{selectedNode.name}'s Network</h2>
+        <svg ref={svgRef} className="w-full h-full"></svg>
       </div>
     </div>
   );
