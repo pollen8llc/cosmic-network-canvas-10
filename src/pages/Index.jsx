@@ -88,6 +88,10 @@ const Index = () => {
     setSelectedProfile(null);
   };
 
+  const handleNodeClick = (node) => {
+    setSelectedProfile(node);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Header />
@@ -118,6 +122,7 @@ const Index = () => {
           profile={selectedProfile}
           connections={connections.slice(0, 10)}
           onClose={handleCloseLightbox}
+          onNodeClick={handleNodeClick}
         />
       )}
     </div>
