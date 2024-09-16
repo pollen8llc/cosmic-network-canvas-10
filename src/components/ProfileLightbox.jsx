@@ -15,7 +15,7 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
 
       const simulation = d3.forceSimulation([selectedNode, ...connections])
         .force("link", d3.forceLink().id(d => d.id).distance(100))
-        .force("charge", d3.forceManyBody().strength(-50))
+        .force("charge", d3.forceManyBody().strength(-300))
         .force("center", d3.forceCenter(width / 2, height / 2))
         .force("collision", d3.forceCollide().radius(30));
 
@@ -49,7 +49,7 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
         .enter().append("text")
         .text(d => d.name)
         .attr("font-size", "10px")
-        .attr("fill", "#fff")
+        .attr("fill", "#000")
         .attr("dx", 12)
         .attr("dy", 4);
 
@@ -61,12 +61,12 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
           .attr("y2", d => d.target.y);
 
         node
-          .attr("cx", d => d.x)
-          .attr("cy", d => d.y);
+          .attr("cx", d => Math.max(30, Math.min(width - 30, d.x)))
+          .attr("cy", d => Math.max(30, Math.min(height - 30, d.y)));
 
         text
-          .attr("x", d => d.x)
-          .attr("y", d => d.y);
+          .attr("x", d => Math.max(30, Math.min(width - 30, d.x)))
+          .attr("y", d => Math.max(30, Math.min(height - 30, d.y)));
       });
 
       function dragstarted(event) {
@@ -89,15 +89,15 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
   }, [selectedNode, connections]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-      <div className="bg-gray-900 p-8 rounded-lg relative w-full h-full">
+    <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded-lg relative w-full h-full">
         <button
           className="absolute top-4 right-4 text-red-500 text-2xl"
           onClick={onClose}
         >
           ×
         </button>
-        <h2 className="text-2xl font-bold mb-4 text-white">{selectedNode.name}'s Network</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black">{selectedNode.name}'s Network</h2>
         <svg ref={svgRef} width="100%" height="calc(100% - 60px)"></svg>
       </div>
     </div>

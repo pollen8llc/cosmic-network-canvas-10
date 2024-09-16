@@ -16,12 +16,28 @@ const generateRandomConnections = (count) => {
   }));
 };
 
-const generateNetworkGrowth = (connections) => {
+const generateNetworkGrowth = (connections, timeRange) => {
   const baseValue = connections.length * 3.14;
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return months.map((month, index) => ({
-    date: month,
-    value: Math.round(baseValue * (1 + (Math.random() - 0.5) * 0.2)), // Fluctuation of ±10%
+  let dataPoints;
+  switch (timeRange) {
+    case '1M':
+      dataPoints = 30;
+      break;
+    case '3M':
+      dataPoints = 90;
+      break;
+    case '6M':
+      dataPoints = 180;
+      break;
+    case '1Y':
+      dataPoints = 365;
+      break;
+    default:
+      dataPoints = 365;
+  }
+  return Array.from({ length: dataPoints }, (_, index) => ({
+    date: new Date(Date.now() - (dataPoints - index) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    value: Math.round(baseValue * (1 + (Math.random() - 0.5) * 0.2 + index * 0.01)),
   }));
 };
 
@@ -35,6 +51,11 @@ const generateNetworkUpdates = (connections) => {
     type: updateTypes[Math.floor(Math.random() * updateTypes.length)],
     content: `This is a ${updateTypes[Math.floor(Math.random() * updateTypes.length)]} update from ${conn.name} in the ${conn.industry} industry.`,
     timestamp: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+    likes: Math.floor(Math.random() * 100),
+    comments: Array.from({ length: Math.floor(Math.random() * 5) }, (_, i) => ({
+      author: `Commenter ${i + 1}`,
+      content: `This is comment ${i + 1} on the update.`
+    }))
   }));
 };
 
@@ -43,6 +64,7 @@ const Index = () => {
   const [isIndustryListOpen, setIsIndustryListOpen] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [timeRange, setTimeRange] = useState('1M');
 
   const username = "JOSEPH FRANCO";
   const connections = useMemo(() => generateRandomConnections(139), []);
@@ -50,7 +72,7 @@ const Index = () => {
 
   const networkUpdates = useMemo(() => generateNetworkUpdates(connections), [connections]);
 
-  const networkGrowth = useMemo(() => generateNetworkGrowth(connections), [connections]);
+  const networkGrowth = useMemo(() => generateNetworkGrowth(connections, timeRange), [connections, timeRange]);
 
   const industries = useMemo(() => {
     const industryCount = connections.reduce((acc, conn) => {
@@ -92,6 +114,10 @@ const Index = () => {
     setSelectedProfile(node);
   };
 
+  const handleTimeRangeChange = (newTimeRange) => {
+    setTimeRange(newTimeRange);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Header />
@@ -109,6 +135,8 @@ const Index = () => {
           networkGrowth={networkGrowth}
           selectedIndustry={selectedIndustry}
           onProfileClick={handleProfileClick}
+          timeRange={timeRange}
+          onTimeRangeChange={handleTimeRangeChange}
         />
       </main>
       <IndustryList
