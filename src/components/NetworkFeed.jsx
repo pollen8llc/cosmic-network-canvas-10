@@ -1,31 +1,67 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ThumbsUp, MessageSquare } from 'lucide-react';
+import { ThumbsUp, MessageSquare, ChevronUp, ChevronDown } from 'lucide-react';
 import TimeFilter from './TimeFilter';
 
 const NetworkFeed = ({ activeView, connections, networkUpdates, networkGrowth, selectedIndustry, onProfileClick, timeRange, onTimeRangeChange }) => {
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortBy, setSortBy] = useState('name');
+
+  const sortConnections = (connections) => {
+    return [...connections].sort((a, b) => {
+      if (a[sortBy] < b[sortBy]) return sortOrder === 'asc' ? -1 : 1;
+      if (a[sortBy] > b[sortBy]) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  };
+
   const filteredUpdates = selectedIndustry
     ? networkUpdates.filter(update => update.industry === selectedIndustry)
     : networkUpdates;
 
+  const SortIcon = ({ field }) => {
+    if (sortBy !== field) return null;
+    return sortOrder === 'asc' ? <ChevronUp className="inline-block w-4 h-4" /> : <ChevronDown className="inline-block w-4 h-4" />;
+  };
+
   if (activeView === 'connections') {
+    const sortedConnections = sortConnections(connections);
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {connections.map((connection) => (
-          <Card key={connection.id} className="cursor-pointer" onClick={() => onProfileClick(connection)}>
-            <CardContent className="flex flex-col items-center p-4">
-              <Avatar className="w-24 h-24 mb-2">
-                <AvatarImage src={connection.avatar} alt={connection.name} />
-                <AvatarFallback>{connection.name[0]}</AvatarFallback>
-              </Avatar>
-              <h3 className="font-semibold">{connection.name}</h3>
-              <p className="text-sm text-gray-500">{connection.industry}</p>
-            </CardContent>
-          </Card>
-        ))}
+      <div>
+        <div className="mb-4 flex justify-between">
+          <button onClick={() => handleSort('name')} className="text-white">
+            Name <SortIcon field="name" />
+          </button>
+          <button onClick={() => handleSort('industry')} className="text-white">
+            Industry <SortIcon field="industry" />
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {sortedConnections.map((connection) => (
+            <Card key={connection.id} className="cursor-pointer" onClick={() => onProfileClick(connection)}>
+              <CardContent className="flex flex-col items-center p-4">
+                <Avatar className="w-24 h-24 mb-2">
+                  <AvatarImage src={connection.avatar} alt={connection.name} />
+                  <AvatarFallback>{connection.name[0]}</AvatarFallback>
+                </Avatar>
+                <h3 className="font-semibold">{connection.name}</h3>
+                <p className="text-sm text-gray-500">{connection.industry}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
