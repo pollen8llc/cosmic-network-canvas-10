@@ -3,12 +3,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const NetworkFeed = ({ activeView, connections, networkUpdates, networkGrowth }) => {
+const NetworkFeed = ({ activeView, connections, networkUpdates, networkGrowth, selectedIndustry, onProfileClick }) => {
+  const filteredUpdates = selectedIndustry
+    ? networkUpdates.filter(update => update.industry === selectedIndustry)
+    : networkUpdates;
+
   if (activeView === 'connections') {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {connections.map((connection) => (
-          <Card key={connection.id}>
+          <Card key={connection.id} className="cursor-pointer" onClick={() => onProfileClick(connection)}>
             <CardContent className="flex flex-col items-center p-4">
               <Avatar className="w-24 h-24 mb-2">
                 <AvatarImage src={connection.avatar} alt={connection.name} />
@@ -39,11 +43,11 @@ const NetworkFeed = ({ activeView, connections, networkUpdates, networkGrowth })
     );
   }
 
-  // Default view: network updates
+  // Default view: network updates or industry updates
   return (
     <div>
-      {networkUpdates.map((update, index) => (
-        <Card key={index} className="mb-4">
+      {filteredUpdates.map((update) => (
+        <Card key={update.id} className="mb-4">
           <CardContent className="flex items-start p-4">
             <Avatar className="mr-4">
               <AvatarImage src={update.avatar} alt={update.name} />
@@ -51,7 +55,9 @@ const NetworkFeed = ({ activeView, connections, networkUpdates, networkGrowth })
             </Avatar>
             <div>
               <h3 className="font-semibold">{update.name}</h3>
-              <p className="text-sm text-gray-500">{update.content}</p>
+              <p className="text-sm text-gray-500">{update.industry}</p>
+              <p className="text-sm">{update.content}</p>
+              <p className="text-xs text-gray-400 mt-1">{new Date(update.timestamp).toLocaleString()}</p>
             </div>
           </CardContent>
         </Card>

@@ -1,8 +1,8 @@
 import React from 'react';
 
-const ProfileBanner = ({ username }) => {
+const ProfileBanner = ({ username, onClick }) => {
   return (
-    <div className="bg-black p-8 relative overflow-hidden">
+    <div className="bg-black p-8 relative overflow-hidden cursor-pointer" onClick={onClick}>
       <div className="absolute inset-0">
         <div className="stars"></div>
       </div>
