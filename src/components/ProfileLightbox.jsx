@@ -21,7 +21,7 @@ const ProfileLightbox = ({ profile, connections, onClose }) => {
         .selectAll("line")
         .data(connections.map(d => ({ source: profile, target: d })))
         .enter().append("line")
-        .attr("stroke", "#999")
+        .attr("stroke", "#666")
         .attr("stroke-opacity", 0.6);
 
       const node = svg.append("g")
@@ -29,7 +29,7 @@ const ProfileLightbox = ({ profile, connections, onClose }) => {
         .data([profile, ...connections])
         .enter().append("circle")
         .attr("r", d => d === profile ? 10 : 5)
-        .attr("fill", d => d === profile ? "#000" : "#666");
+        .attr("fill", d => d === profile ? "#fff" : "#999");
 
       const text = svg.append("g")
         .selectAll("text")
@@ -37,6 +37,7 @@ const ProfileLightbox = ({ profile, connections, onClose }) => {
         .enter().append("text")
         .text(d => d.name)
         .attr("font-size", "10px")
+        .attr("fill", "#fff")
         .attr("dx", 12)
         .attr("dy", 4);
 
@@ -59,16 +60,16 @@ const ProfileLightbox = ({ profile, connections, onClose }) => {
   }, [profile, connections]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg relative">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+      <div className="bg-gray-900 p-8 rounded-lg relative w-full h-full">
         <button
-          className="absolute top-4 right-4 text-black text-2xl"
+          className="absolute top-4 right-4 text-red-500 text-2xl"
           onClick={onClose}
         >
           ×
         </button>
-        <h2 className="text-2xl font-bold mb-4">{profile.name}'s Network</h2>
-        <svg ref={svgRef} width="800" height="600"></svg>
+        <h2 className="text-2xl font-bold mb-4 text-white">{profile.name}'s Network</h2>
+        <svg ref={svgRef} width="100%" height="calc(100% - 60px)"></svg>
       </div>
     </div>
   );

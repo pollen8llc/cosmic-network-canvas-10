@@ -89,7 +89,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-900 text-white">
       <Header />
       <ProfileBanner username={username} onClick={handleProfileBannerClick} />
       <main className="container mx-auto px-4 py-8">
