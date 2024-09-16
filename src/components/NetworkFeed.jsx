@@ -3,12 +3,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ThumbsUp, MessageSquare, ChevronUp, ChevronDown } from 'lucide-react';
+import { ThumbsUp, MessageSquare, ChevronUp, ChevronDown, Search } from 'lucide-react';
 import TimeFilter from './TimeFilter';
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const NetworkFeed = ({ activeView, connections, networkUpdates, networkGrowth, selectedIndustry, onProfileClick, timeRange, onTimeRangeChange }) => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [sortBy, setSortBy] = useState('name');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [industryFilter, setIndustryFilter] = useState('All');
 
   const sortConnections = (connections) => {
     return [...connections].sort((a, b) => {
@@ -27,20 +31,46 @@ const NetworkFeed = ({ activeView, connections, networkUpdates, networkGrowth, s
     }
   };
 
-  const filteredUpdates = selectedIndustry
-    ? networkUpdates.filter(update => update.industry === selectedIndustry)
-    : networkUpdates;
+  const filteredConnections = connections.filter(connection =>
+    connection.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (industryFilter === 'All' || connection.industry === industryFilter)
+  );
+
+  const sortedConnections = sortConnections(filteredConnections);
+
+  const filteredUpdates = networkUpdates.filter(update =>
+    update.content.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (selectedIndustry ? update.industry === selectedIndustry : true) &&
+    (industryFilter === 'All' || update.industry === industryFilter)
+  );
 
   const SortIcon = ({ field }) => {
     if (sortBy !== field) return null;
     return sortOrder === 'asc' ? <ChevronUp className="inline-block w-4 h-4" /> : <ChevronDown className="inline-block w-4 h-4" />;
   };
 
+  const industries = ['All', ...new Set(connections.map(c => c.industry))];
+
   if (activeView === 'connections') {
-    const sortedConnections = sortConnections(connections);
     return (
       <div>
-        <div className="mb-4 flex justify-between">
+        <div className="mb-4 flex flex-wrap gap-4">
+          <Input
+            placeholder="Search connections..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-xs"
+          />
+          <Select value={industryFilter} onValueChange={setIndustryFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by industry" />
+            </SelectTrigger>
+            <SelectContent>
+              {industries.map((industry) => (
+                <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <button onClick={() => handleSort('name')} className="text-white">
             Name <SortIcon field="name" />
           </button>
@@ -86,6 +116,24 @@ const NetworkFeed = ({ activeView, connections, networkUpdates, networkGrowth, s
   // Default view: network updates or industry updates
   return (
     <div>
+      <div className="mb-4 flex flex-wrap gap-4">
+        <Input
+          placeholder="Search updates..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-xs"
+        />
+        <Select value={industryFilter} onValueChange={setIndustryFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by industry" />
+          </SelectTrigger>
+          <SelectContent>
+            {industries.map((industry) => (
+              <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       {filteredUpdates.map((update) => (
         <Card key={update.id} className="mb-4">
           <CardContent className="flex items-start p-4">

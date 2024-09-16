@@ -18,8 +18,8 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
          .attr("height", height);
 
       const simulation = d3.forceSimulation([selectedNode, ...connections])
-        .force("link", d3.forceLink().id(d => d.id).distance(70))
-        .force("charge", d3.forceManyBody().strength(-300))
+        .force("link", d3.forceLink().id(d => d.id).distance(40))
+        .force("charge", d3.forceManyBody().strength(-100))
         .force("center", d3.forceCenter(width / 2, height / 2))
         .force("collision", d3.forceCollide().radius(20));
 
