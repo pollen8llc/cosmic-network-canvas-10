@@ -10,5 +10,14 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+// Check if all required environment variables are present
+const missingVars = Object.entries(firebaseConfig).filter(([key, value]) => !value);
+
+if (missingVars.length > 0) {
+  console.error('Missing Firebase configuration. Please check your environment variables:');
+  missingVars.forEach(([key]) => console.error(`- ${key}`));
+  throw new Error('Firebase configuration is incomplete. Check the console for details.');
+}
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
