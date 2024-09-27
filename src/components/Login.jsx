@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSignInWithGoogle } from 'react-firebase-hooks/auth';
-import { auth } from '../firebase';
+import { auth } from '../firebaseConfig';
 import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
+  const navigate = useNavigate();
 
   if (loading) {
     return <div>Loading...</div>;
@@ -13,7 +15,8 @@ const Login = () => {
     return <div>Error: {error.message}</div>;
   }
   if (user) {
-    return <div>Logged in as {user.user.displayName}</div>;
+    navigate('/');
+    return null;
   }
 
   return (

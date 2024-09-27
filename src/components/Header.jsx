@@ -3,14 +3,25 @@ import { Button } from "@/components/ui/button";
 import { Users, LogOut } from "lucide-react";
 import InviteDialog from './InviteDialog';
 import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../firebaseConfig';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [isInviteDialogOpen, setIsInviteDialogOpen] = React.useState(false);
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSignOut = () => {
-    signOut(auth);
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigate('/login');
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
+
+  if (!currentUser) return null;
 
   return (
     <header className="bg-black p-4 flex justify-between items-center">
