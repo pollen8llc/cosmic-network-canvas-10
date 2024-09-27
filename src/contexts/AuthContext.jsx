@@ -34,10 +34,6 @@ export function AuthProvider({ children }) {
     error
   };
 
-  if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
-  }
-
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}
