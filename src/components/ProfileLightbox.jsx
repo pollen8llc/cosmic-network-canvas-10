@@ -1,27 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
-// Add CSS-in-JS style for pulsating effect
-const styles = `
-  @keyframes pulse {
-    0% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    50% {
-      transform: scale(1.1);
-      opacity: 0.7;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  .node-pulse {
-    animation: pulse 2s infinite;
-  }
-`;
-
 const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
@@ -69,7 +48,6 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
         .enter().append("circle")
         .attr("r", d => d === selectedNode ? 20 : 15)
         .attr("fill", d => d === selectedNode ? "#fff" : "#999")
-        .attr("class", d => d !== selectedNode ? "node-pulse" : "") // Apply pulsating effect to non-selected nodes
         .call(d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
@@ -132,7 +110,6 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-      <style>{styles}</style> {/* Inject the CSS */}
       <div ref={containerRef} className="w-full h-full p-8 relative">
         <button
           className="absolute top-4 right-4 text-white text-2xl z-10"
