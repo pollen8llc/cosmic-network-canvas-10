@@ -18,31 +18,20 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
       svg.attr("width", width)
          .attr("height", height);
 
-      const g = svg.append("g");
-
-      // Add zoom functionality
-      const zoom = d3.zoom()
-        .scaleExtent([0.1, 4])
-        .on("zoom", (event) => {
-          g.attr("transform", event.transform);
-        });
-
-      svg.call(zoom);
-
       const simulation = d3.forceSimulation([selectedNode, ...connections])
         .force("link", d3.forceLink().id(d => d.id).distance(60))
         .force("charge", d3.forceManyBody().strength(-200))
         .force("center", d3.forceCenter((width - padding) / 2, (height - padding) / 2))
         .force("collision", d3.forceCollide().radius(30));
 
-      const link = g.append("g")
+      const link = svg.append("g")
         .selectAll("line")
         .data(connections.map(d => ({ source: selectedNode, target: d })))
         .enter().append("line")
         .attr("stroke", "#fff")
         .attr("stroke-opacity", 0.6);
 
-      const node = g.append("g")
+      const node = svg.append("g")
         .selectAll("circle")
         .data([selectedNode, ...connections])
         .enter().append("circle")
@@ -59,7 +48,7 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
           }
         });
 
-      const text = g.append("g")
+      const text = svg.append("g")
         .selectAll("text")
         .data([selectedNode, ...connections])
         .enter().append("text")
@@ -77,12 +66,12 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
           .attr("y2", d => d.target.y);
 
         node
-          .attr("cx", d => d.x)
-          .attr("cy", d => d.y);
+          .attr("cx", d => Math.max(padding, Math.min(width - padding, d.x)))
+          .attr("cy", d => Math.max(padding, Math.min(height - padding, d.y)));
 
         text
-          .attr("x", d => d.x)
-          .attr("y", d => d.y);
+          .attr("x", d => Math.max(padding, Math.min(width - padding, d.x)))
+          .attr("y", d => Math.max(padding, Math.min(height - padding, d.y)));
       });
 
       function dragstarted(event) {
@@ -101,10 +90,6 @@ const ProfileLightbox = ({ profile, connections, onClose, onNodeClick }) => {
         event.subject.fx = null;
         event.subject.fy = null;
       }
-
-      // Center the view on initial render
-      const initialTransform = d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8);
-      svg.call(zoom.transform, initialTransform);
     }
   }, [selectedNode, connections]);
 
