@@ -1,4 +1,7 @@
 import React, { useState, useMemo } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../firebase';
+import Login from '../components/Login';
 import Header from '../components/Header';
 import ProfileBanner from '../components/ProfileBanner';
 import ActionButtons from '../components/ActionButtons';
@@ -60,13 +63,14 @@ const generateNetworkUpdates = (connections) => {
 };
 
 const Index = () => {
+  const [user] = useAuthState(auth);
   const [activeView, setActiveView] = useState('updates');
   const [isIndustryListOpen, setIsIndustryListOpen] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [timeRange, setTimeRange] = useState('1M');
 
-  const username = "JOSEPH FRANCO";
+  const username = user ? user.displayName : "Guest";
   const connections = useMemo(() => generateRandomConnections(139), []);
   const networkValue = useMemo(() => Math.round(connections.length * 3.14), [connections]);
 
@@ -117,6 +121,10 @@ const Index = () => {
   const handleTimeRangeChange = (newTimeRange) => {
     setTimeRange(newTimeRange);
   };
+
+  if (!user) {
+    return <Login />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
